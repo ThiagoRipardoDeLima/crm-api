@@ -1,0 +1,32 @@
+services:
+  php:
+    container_name: teste-app
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./application:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    #entrypoint: ['composer', '--ignore-platform-reqs', 'php', '/var/www/html/artisan']
+    networks:
+      - teste-network
+  
+  nginx:
+    container_name: teste-ngix
+    image: nginx:latest
+    restart: unless-stopped
+    tty: true
+    ports:
+      - '8080:80'
+      - '443:443'
+    volumes:
+      - ./application:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - teste-network
+
+networks:
+  teste-network:
+    driver: bridge

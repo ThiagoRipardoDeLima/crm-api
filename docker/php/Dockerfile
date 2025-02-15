@@ -1,8 +1,4 @@
-FROM php:7.4-fpm-alpine
-ENV NODE_MAJOR=18
-WORKDIR /var/www
-
-RUN rm -rf /var/www/html
+FROM php:8.2-fpm
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -10,49 +6,45 @@ RUN apt-get update && apt-get install -y \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
     locales \
-    zip \
     jpegoptim optipng pngquant gifsicle \
     vim \
-    unzip \
     git \
     curl \
+    zip \
+    unzip \
+    libpq-dev \
     libzip-dev \
-    apt-utils \
-    libonig-dev\
-    nano
+    libexif-dev \
+    libonig-dev 
 
-    # dependências recomendadas de desenvolvido para ambiente linux
-RUN apt-get update && apt-get install -y \
-zlib1g-dev \
-libzip-dev \
-unzip \
-libpng-dev \
-libpq-dev \
-libxml2-dev
+WORKDIR /var/www
 
-RUN docker-php-ext-install mysqli pdo pdo_mysql pdo_pgsql pgsql session xml
+#clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Nodejs
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
-&& DEBIAN_FRONTEND=noninteractive apt-get install nodejs -yq
-
-RUN docker-php-ext-install zip pdo_mysql mbstring exif
+#install extensios
+RUN docker-php-ext-install zip pdo pdo_mysql mbstring exif
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
 RUN docker-php-ext-install gd
 
-RUN mkdir -p /usr/src/php/ext/redis; \
-	curl -fsSL https://pecl.php.net/get/redis --ipv4 | tar xvz -C "/usr/src/php/ext/redis" --strip 1; \
-	docker-php-ext-install redis;
-
+#install composer    
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-RUN groupadd -g 1000 laravel
-RUN useradd -u 1000 -ms /bin/bash -g laravel user
+# Add user for laravel application
+RUN groupadd -g 1000 www
+RUN useradd -u 1000 -ms /bin/bash -g www www
 
-COPY --chown=user:laravel . /var/www
+# Copy existing application dir contents
+COPY . /var/www/
 
-USER user
+# fix permissions
+RUN chown -R www-data:www-data var/www/application
+RUN chmod -R 777 var/www/application
 
+# Change current user to www
+USER www
+
+# Expose port 9000 and start php-fpm server
 EXPOSE 9000
 ENTRYPOINT [ "composer" ]
 CMD ["php-fpm"]

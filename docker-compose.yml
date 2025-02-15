@@ -5,19 +5,21 @@ services:
       dockerfile: docker/php/Dockerfile
     container_name: crm-api-app
     restart: always
-    working_dir: /var/www
+    working_dir: /var/www/
     volumes:
       - ./:/var/www
-      - ./application:/var/www
-    enviroment:
+      - ./application:/var/www/application
+    environment:
       - COMPOSER_HOME=/composer
       - COMPOSER_ALLOW_SUPERUSER=1
       - APP_ENV=local
     networks:
       - crm-api-network
+    depends_on:
+      - nginx
   
   nginx:
-    container_name: crm-api-ngix
+    container_name: crm-api-nginx
     image: nginx:1.27.4-alpine-slim
     restart: always
     ports:

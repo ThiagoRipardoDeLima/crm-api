@@ -37,14 +37,16 @@ RUN useradd -u 1000 -ms /bin/bash -g www www
 # Copy existing application dir contents
 COPY . /var/www/
 
+# Copy existing application directory permissions
+COPY --chown=www:www . /var/www
+
 # fix permissions
-RUN chown -R www-data:www-data var/www/application
-RUN chmod -R 777 var/www/application
+RUN chown -R www-data:www-data /var/www/application
+RUN chmod -R 777 /var/www/application
 
 # Change current user to www
 USER www
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
-ENTRYPOINT [ "composer" ]
 CMD ["php-fpm"]

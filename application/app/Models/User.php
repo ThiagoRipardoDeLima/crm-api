@@ -46,4 +46,26 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function rules(): array
+    {
+        return  [
+            'name' => 'required|max:255',
+            'email' => 'required|email|unique:users'.$this->id,
+            'password' => 'required|min:6',
+            'remember' => 'required'
+        ];
+    }
+
+    public function Messages()
+    {
+        return [
+            'required' => 'O campo :attribute é obrigratório',
+            'email.email' => 'O campo :attribute é invalido',
+            'email.unique' => 'O :attribute já está em uso',
+            'password.min' => 'O campo :attribute de conter pelo menos :min caracteres',
+            'remember.required' => 'O campo :attribute é obrigatório',
+            'remember.boolean' => 'O campo :attribute deve ser verdadeiro ou falso'
+        ];
+    }
 }

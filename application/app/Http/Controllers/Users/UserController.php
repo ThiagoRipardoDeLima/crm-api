@@ -1,11 +1,9 @@
 <?php
-
 namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserRequest;
 use App\Services\UserService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
 
 class UserController extends Controller
 {
@@ -21,15 +19,7 @@ class UserController extends Controller
     }
 
     //method store
-    public function store(Request $request) {
-
-        $request->validate([
-            'name' => 'required|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6',
-            'remember' => 'required'
-        ]);
-
+    public function store(UserRequest $request) {
         return $this->userService->create($request);
     }
 
@@ -39,7 +29,7 @@ class UserController extends Controller
     }
 
     //method update
-    public function update(string $id, Request $request) {
+    public function update(string $id, UserRequest $request) {
         return $this->userService->update($id, $request);
     }
 

@@ -26,13 +26,7 @@ class UserService
 
     public function create($request)
     {
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
-        $user->remember_token = Hash::make($request->remember_token);
-        $user->save();
-        return $user;
+        return $this->userRepository->create($request);
     }
 
     public function update($id, $data)

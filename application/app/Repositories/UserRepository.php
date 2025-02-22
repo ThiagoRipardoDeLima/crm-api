@@ -12,6 +12,8 @@ class UserRepository
      */
     protected $users;
 
+    const DATE_FORMAT = 'Y-m-d H:i:s';
+
     public function __construct(User $model)
     {
         $this->users = new User();
@@ -24,7 +26,13 @@ class UserRepository
 
     public function getById($id)
     {
-        return $this->users->findOrFail($id);
+        $model = $this->users->find($id);
+
+        if(!$model){
+            return response()->json(['message' => 'Usuário não encontrado'], 404);
+        }
+
+        return $model;
     }
 
     public function create(Request $request)
@@ -39,27 +47,48 @@ class UserRepository
         return response()->json($user, 201);
     }
 
-    public function update($id, $attributes)
+    public function update($id, $request)
     {
-        $user = $this->users->find($id);
-        if($user === null)
-            return response()->json(['success' => false, 'detail' => 'Registro não encontrado'], 404);
+        $model = $this->users->find($id);
 
-        $rules = $this->users->rules();
-        if($attributes->method() === 'PATCH')
-            $rules = array_intersect_key($user->rules(), $attributes->all());
+        if(!$model){
+            return response()->json(['message' => 'Usuário não encontrado'], 404);
+        }
 
-        $attributes->validate($rules, $user->feedback());
+        $existingUser = $this->users->where('email', $request->email)->first();
+        if($existingUser && $existingUser->id != $id){
+            return response()->json(['message' => 'Email já cadastrado'], 400);
+        }
 
-        $user->fill($attributes->all());
+        $changed = false;
 
-        $user->save();
+        if ($model->name !== $request->name) {
+            $model->name = $request->name;
+            $changed = true;
+        }
+        if ($request->password) {
+            $model->password = Hash::make($request->password);
+            $changed = true;
+        }
+        if ($model->remember_token !== $request->remember_token) {
+            $model->remember_token = Hash::make($request->remember_token);
+            $changed = true;
+        }
 
-        return response()->json($user, 200);
+        if ($changed) {
+            $model->updated_at = date(self::DATE_FORMAT);
+            $model->update();
+        }
+
+        return $model;
     }
 
     public function delete($id)
     {
-        return $this->users->find($id)->delete();
+        if($this->users->find($id)->delete()){
+            return response()->json(['message' => 'Usuário deletado com sucesso'], 200);
+        } else {
+            return response()->json(['message' => 'Usuário não encontrado'], 404);
+        }
     }
 }

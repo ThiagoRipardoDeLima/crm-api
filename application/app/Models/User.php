@@ -4,14 +4,16 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use OpenApi\Annotations as OA;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -47,25 +49,11 @@ class User extends Authenticatable
         ];
     }
 
-    public function rules(): array
-    {
-        return  [
-            'name' => 'required|max:255',
-            'email' => 'required|email|unique:users'.$this->id,
-            'password' => 'required|min:6',
-            'remember' => 'required'
-        ];
-    }
+    /**
+     *  The attributes that should be mutated to dates.
+     *
+     * @var array<int, string>
+     */
+    protected $dates = ['deleted_at'];
 
-    public function Messages()
-    {
-        return [
-            'required' => 'O campo :attribute é obrigratório',
-            'email.email' => 'O campo :attribute é invalido',
-            'email.unique' => 'O :attribute já está em uso',
-            'password.min' => 'O campo :attribute de conter pelo menos :min caracteres',
-            'remember.required' => 'O campo :attribute é obrigatório',
-            'remember.boolean' => 'O campo :attribute deve ser verdadeiro ou falso'
-        ];
-    }
 }

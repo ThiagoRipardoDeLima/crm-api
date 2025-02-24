@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Users;
 
 use App\Services\UserService;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\UserRequestsDTO;
 use App\Http\Requests\User\UserStoreRequestsDTO;
 use App\Http\Requests\User\UserUpdateRequestsDTO;
 use OpenApi\Annotations as OA;
@@ -65,7 +66,7 @@ class UserController extends Controller
      *      )
      * )
      */
-    public function store(UserStoreRequestsDTO $request) {
+    public function store(UserRequestsDTO $request) {
         return $this->userService->create($request);
     }
 
@@ -150,7 +151,7 @@ class UserController extends Controller
      *      )
      * )
      */
-    public function update(UserUpdateRequestsDTO $request, string $id) {
+    public function update(UserRequestsDTO $request, string $id) {
         return $this->userService->update($id, $request);
     }
 

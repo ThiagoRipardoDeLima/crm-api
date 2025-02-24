@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\User;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-
 /**
  * @OA\Schema(
- *     schema="UserUpdateRequestsDTO",
+ *     schema="UserRequestsDTO",
  *     type="object",
  *     required ={"name","email","password","remember_token"})
  *     {
@@ -17,8 +17,13 @@ use Illuminate\Foundation\Http\FormRequest;
  *    }
  * )
  */
-class UserUpdateRequestsDTO extends FormRequest
+class UserRequestsDTO extends FormRequest
 {
+
+    private $name;
+    private $email;
+    private $password;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -31,7 +36,7 @@ class UserUpdateRequestsDTO extends FormRequest
     {
         return [
             'name' => 'required|max:255',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users,email,'.$this->id,
             'password' => 'required|min:6',
             'remember' => 'required',
         ];
@@ -43,10 +48,34 @@ class UserUpdateRequestsDTO extends FormRequest
             'name.required' => 'O campo name é obrigatório.',
             'email.required' => 'O campo email é obrigatório.',
             'email.email' => 'O email informado é inválido.',
+            'email.unique' => 'O email já esta em uso.',
             'password.required' => 'O campo password é obrigatório.',
             'password.min' => 'A senha deve conter pelo menos 6 caracteres.',
             'remember.required' => 'O campo remember é obrigatório.',
             'remember.boolean' => 'O campo remember deve ser verdadeiro ou falso.',
         ];
     }
+
+    public static function FromModel(User $user): UserRequestsDTO
+    {
+        return self::getFromModel($user);
+    }
+
+    private function getFromModel(User $user)
+    {
+        $this->name = $user->name;
+        $this->email = $user->email;
+        return $this;
+    }
+
+    public static function ToModel(UserRequestsDTO $dto): User
+    {
+        $user = new User;
+        $user->name = $dto->name;
+        $user->email = $dto->email;
+        $user->password = $dto->password;
+        $user->remember = $dto->remember;
+        return $user;
+    }
+
 }

@@ -15,6 +15,69 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/v1/dewtech/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Autenticação de usuário",
+                "description": "Login para obter o token de acesso",
+                "operationId": "login",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "description": "User email",
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "description": "User password",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "email": "user@example.com",
+                                    "password": "password1234"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Autenticado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "type": "string",
+                                            "example": "abcd1234"
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "Bearer"
+                                        },
+                                        "expires_at": {
+                                            "type": "string",
+                                            "example": "2023-08-12 12:34:56"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    }
+                }
+            }
+        },
         "/v1/dewtech/users": {
             "get": {
                 "tags": [
@@ -31,7 +94,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/UserStoreRequestsDTO"
+                                        "$ref": "#/components/schemas/UserRequestsDTO"
                                     }
                                 }
                             }
@@ -278,34 +341,24 @@
     },
     "components": {
         "schemas": {
-            "UserStoreRequestsDTO": {
+            "LoginRequestDto": {
                 "required": [
-                    "name",
                     "email",
-                    "password",
-                    "remember_token"
+                    "password"
                 ],
                 "properties": {
-                    "name": {
-                        "description": "User name",
-                        "type": "string"
-                    },
                     "email": {
                         "description": "User email",
                         "type": "string"
                     },
                     "password": {
-                        "description": "User password",
-                        "type": "string"
-                    },
-                    "remember_token": {
-                        "description": "User remember token",
+                        "description": "User Password",
                         "type": "string"
                     }
                 },
                 "type": "object"
             },
-            "UserUpdateRequestsDTO": {
+            "UserRequestsDTO": {
                 "required": [
                     "name",
                     "email",
@@ -348,6 +401,10 @@
         }
     },
     "tags": [
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
         {
             "name": "Users",
             "description": "Users"

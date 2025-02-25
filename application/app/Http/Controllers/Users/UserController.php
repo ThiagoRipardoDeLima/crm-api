@@ -27,7 +27,7 @@ class UserController extends Controller
     *       description="Successful operation",
     *       @OA\JsonContent(
     *           type="array",
-    *           @OA\Items(ref="#/components/schemas/UserStoreRequestsDTO")
+    *           @OA\Items(ref="#/components/schemas/UserRequestsDTO")
     *       )
     *   )
      * )

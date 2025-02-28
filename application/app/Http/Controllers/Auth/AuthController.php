@@ -56,4 +56,30 @@ class AuthController extends Controller
     {
         return $this->authService->authenticate($request);
     }
+
+
+    /**
+     * @OA\Post(
+     *     path="/v1/dewtech/logout",
+     *     operationId="logout",
+     *     tags={"Auth"},
+     *     summary="Invalidar token de acesso",
+     *     description="Efetuar logout e invalida o token de acesso",
+     *     security={{"jwtAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logout realizado com sucesso",
+     *         @OA\JsonContent(ref="#/components/schemas/SuccessResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Invalid credentials"
+     *     )
+     * )
+     */
+    public function logout()
+    {
+        return $this->authService->logout();
+    }
+
 }

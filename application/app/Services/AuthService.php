@@ -58,9 +58,12 @@ class AuthService
 
     public function logout()
     {
-       /*  $user = Auth::user()->token();
-        $user->revoke();
 
-        return ['message' => 'Successfully logged out']; */
+        dd(Auth::user());
+        Auth::user()->tokens->each(function($token, $key){
+            $token->revoke();
+        });
+
+        return response()->json(['Message' => 'Usuário saiu do sistema'], 200);
     }
 }

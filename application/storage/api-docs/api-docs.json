@@ -78,6 +78,36 @@
                 }
             }
         },
+        "/v1/dewtech/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Invalidar token de acesso",
+                "description": "Efetuar logout e invalida o token de acesso",
+                "operationId": "logout",
+                "responses": {
+                    "200": {
+                        "description": "Logout realizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuth": []
+                    }
+                ]
+            }
+        },
         "/v1/dewtech/users": {
             "get": {
                 "tags": [
@@ -394,6 +424,23 @@
                     "status": {
                         "type": "boolean",
                         "example": false
+                    }
+                },
+                "type": "object"
+            },
+            "SuccessResponse": {
+                "properties": {
+                    "status": {
+                        "type": "boolean",
+                        "example": "true"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Success message"
+                    },
+                    "code": {
+                        "type": "int64",
+                        "example": 200
                     }
                 },
                 "type": "object"

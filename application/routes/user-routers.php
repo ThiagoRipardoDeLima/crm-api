@@ -2,14 +2,17 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Users\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('/v1/dewtech')->group(function(){
 
     Route::post('/login', [AuthController::class, 'login']);
 
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::middleware(['auth:api'])->group(function(){
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::post('/validateToken', [AuthController::class, 'validateToken']);
+        Route::post('/refreshToken', [AuthController::class, 'refreshToken']);
+    });
 
     Route::prefix('/users')->group(function(){
         Route::get('/', [UserController::class, 'index']);

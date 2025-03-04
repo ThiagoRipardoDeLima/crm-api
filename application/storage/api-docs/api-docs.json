@@ -108,6 +108,79 @@
                 ]
             }
         },
+        "/v1/dewtech/validateToken": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Validar token de acesso",
+                "description": "Validar token de acesso",
+                "operationId": "validateToken",
+                "responses": {
+                    "200": {
+                        "description": "Token válido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/dewtech/refreshtoken": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Atualizar token",
+                "description": "Renova um token de acesso",
+                "operationId": "refreshtoken",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "token": {
+                                        "description": "Bearer Token",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "token": "Bearer abcd1234"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Update token com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuth": []
+                    }
+                ]
+            }
+        },
         "/v1/dewtech/users": {
             "get": {
                 "tags": [
@@ -388,6 +461,18 @@
                 },
                 "type": "object"
             },
+            "RefreshTokenRequestDto": {
+                "required": [
+                    "refresh_token"
+                ],
+                "properties": {
+                    "refresh_token": {
+                        "description": "Refresh token",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "UserRequestsDTO": {
                 "required": [
                     "name",
@@ -444,6 +529,14 @@
                     }
                 },
                 "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "jwtAuth": {
+                "type": "apiKey",
+                "description": "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                "name": "Authorization",
+                "in": "header"
             }
         }
     },

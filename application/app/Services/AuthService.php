@@ -2,11 +2,10 @@
 
 namespace App\Services;
 
-use App\Http\Requests\LoginRequestDto;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\LoginUser\LoginRequestDto;
+use App\Http\Requests\LoginUser\RefreshTokenRequestDto;
 use Illuminate\Support\Facades\Auth;
-
+use Laravel\Passport\RefreshTokenRepository;
 
 class AuthService
 {
@@ -20,13 +19,25 @@ class AuthService
 
         if(Auth::attempt($credentials)){
             $user = Auth::user();
-            $token = $user->createToken('API Token')->accessToken;
+            $tokenResult = $user->createToken('API Token');
+
+            //Gera um refresh token manualmente
+            $refreshTokenRepository = app(RefreshTokenRepository::class);
+            $attributes = [
+                'id' => $tokenResult->token->id,
+                'access_token_id' => $tokenResult->token->id,
+                'revoked' => false,
+                'expires_at' => now()->addDays(1)
+            ];
+
+            $refreshToken = $refreshTokenRepository->create($attributes);
             $expiration = now()->addSeconds(config('auth.expires_in'));
 
             return response()->json([
                 'token_type' => 'Bearer',
                 'expires_in' => $expiration->timestamp,
-                'access_token' => $token
+                'access_token' => $tokenResult->accessToken,
+                'refresh_token' => $refreshToken->id
             ]);
         } else {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -58,12 +69,47 @@ class AuthService
 
     public function logout()
     {
-
-        dd(Auth::user());
         Auth::user()->tokens->each(function($token, $key){
             $token->revoke();
         });
 
         return response()->json(['Message' => 'Usuário saiu do sistema'], 200);
+    }
+
+    public function validateToken()
+    {
+        try {
+            return response()->json(['status' => true, 'message' => 'Token válido', 'code' => 200]);
+            return false;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public function refreshAccessToken(RefreshTokenRequestDto $request)
+    {
+        $refreshTokenRepository = app(RefreshTokenRepository::class);
+        $refreshToken = $refreshTokenRepository->find($request->refresh_token);
+
+        if(!$refreshToken || $refreshToken->revoked) {
+            return response()->json(['error' => 'Invalid refresh token'], 401);
+        }
+
+        //revoke the current refresh token
+        $refreshTokenRepository->revokeRefreshTokensByAccessTokenId($refreshToken->access_token_id);
+
+        //create a new refresh token
+        $user = Auth::user();
+        $newAccessToken = $user->createToken('API Token')->accessToken;
+        $newRefreshToken = $user->createToken('API Token Refresh')->token;
+
+        $expiration = now()->addSeconds(config('auth.expires_in'));
+
+        return response()->json([
+            'token_type' => 'Bearer',
+            'expires_in' => $expiration->timestamp,
+            'access_token' => $newAccessToken,
+            'refresh_token' => $newRefreshToken
+        ]);
     }
 }

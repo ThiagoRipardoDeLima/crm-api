@@ -18,6 +18,8 @@ return [
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
     ],
 
+    'jwt_expiry' => env('JWT_EXPIRY', 3600),
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Guards

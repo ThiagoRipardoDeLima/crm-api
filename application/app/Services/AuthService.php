@@ -30,6 +30,7 @@ class AuthService
                 'expires_at' => now()->addDays(1)
             ];
 
+            // Substitua o prazo de validade conforme necessário
             $refreshToken = $refreshTokenRepository->create($attributes);
             $expiration = now()->addSeconds(config('auth.expires_in'));
 

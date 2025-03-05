@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "darkaonline/l5-swagger": "^8.6",
+        "firebase/php-jwt": "^6.11",
         "laravel/framework": "^11.31",
         "laravel/passport": "^12.0",
         "laravel/tinker": "^2.9"
@@ -26,7 +27,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Helpers/GlobalFunctions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

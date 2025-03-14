@@ -7,11 +7,13 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('/v1/dewtech')->group(function(){
 
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
     Route::middleware(['auth:api'])->group(function(){
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::post('/validateToken', [AuthController::class, 'validateToken']);
         Route::post('/refreshToken', [AuthController::class, 'refreshToken']);
+        Route::post('/update-password', [AuthController::class, 'update']);
     });
 
     Route::prefix('/users')->group(function(){

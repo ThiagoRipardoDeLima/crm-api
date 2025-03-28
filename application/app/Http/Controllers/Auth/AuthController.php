@@ -84,27 +84,6 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     *   path="/v1/dewtech/validateToken",
-     *   operationId="validateToken",
-     *   tags={"Auth"},
-     *   summary="Validar token de acesso",
-     *   description="Validar token de acesso",
-     *   security={{"jwtAuth":{}}},
-     *
-     *  @OA\Response(
-     *   response=200,
-     *   description="Token válido",
-     *   @OA\JsonContent(ref="#/components/schemas/SuccessResponse")
-     *  )
-     * )
-     */
-    public function validateToken()
-    {
-        return $this->authService->validateToken();
-    }
-
-    /**
-     * @OA\Post(
      *     path="/v1/dewtech/refreshtoken",
      *     operationId="refreshtoken",
      *     tags={"Auth"},
@@ -134,5 +113,48 @@ class AuthController extends Controller
     {
         return $this->authService->refreshAccessToken($request);
     }
+
+    /**
+     * @OA\Post(
+     *   path="/v1/dewtech/validateToken",
+     *   operationId="validateToken",
+     *   tags={"Auth"},
+     *   summary="Validar token de acesso",
+     *   description="Validar token de acesso",
+     *   security={{"jwtAuth":{}}},
+     *
+     *  @OA\Response(
+     *   response=200,
+     *   description="Token válido",
+     *   @OA\JsonContent(ref="#/components/schemas/SuccessResponse")
+     *  )
+     * )
+     */
+    public function validateToken()
+    {
+        return $this->authService->validateToken();
+    }
+
+    /*
+     * @OA\Post(
+     *   path="/v1/dewtech/update-password",
+     *   operationId="updatePassword",
+     *   tags={"Auth},
+     *   summary="Atualizar senha",
+     *   description="Atualizar senha do usuário",
+     *   security={{"jwtAuth":{}}},
+     *
+     *   @OA\RequestBody(
+     *      required=true,
+     *      @OA\MediaType(
+     *          mediaType="application\json",
+     *          @OA\Schema(
+     *              @OA\Property(property="current_password", type="string")
+     *          )
+     *      )
+     *   )
+     * )
+     */
+
 
 }
